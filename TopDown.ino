@@ -94,7 +94,7 @@ TileIDplayercheck();
 x=(playerx+14)/16;  
 y=(playery+8)/16;
 TileIDplayercheck();
-}
+}//4 point collision check.
 
 void setup() {
   // put your setup code here, to run once:
@@ -110,11 +110,11 @@ playerx=56,playery=24,playerp=0;
 for(uint8_t i=0;i!=96;i++){
 RoomMap[i]=pgm_read_byte(sampleMAP+i);
   
-}
+}//load tiles to RAM table
 for(unsigned char ID=0;ID!=10;ID++){
 objectID[ID]=1;objectx[ID]=16+ID*16;objecty[ID]=16;objectb[ID]=0;objectp[ID]=0;
 }
-}
+}//loops to set up the 10 objects,
 
 void ObjectBehavior(void){
 for(unsigned char ID=0;ID!=10;ID++){
@@ -132,6 +132,7 @@ break;
 }//for
 
 }//rts
+//object behavior, only one entry so far and was suppose to over above set up...
 
 void loop() {
 if(!arduboy.nextFrame()){return;}
@@ -152,23 +153,31 @@ for(bgx=0;bgx!=(16*12);bgx+=16){
 
 sprites.drawOverwrite(bgx-192+scrollx,bgy-128+scrolly,DungeonGraphic,sampleMAP[tile]);
 tile++;
-}}
+}}// This prints the tiles from upper left to bottom right
+  //changing the *8 to *12 in bgy will increase the map size to 144 tiles,  but you'll also
+  //have to change the array RAM size to 144. Keep in mind TileID is 8-bit, if you need
+  //make a bigger map tile count more than 255 bytes, you can change the RAM varible to unsigned int
+  //and below, you'll have to change -128+scrolly to -192+scrolly.
+  //In this WIP game I'm working with Sprites class
+  
 sprites.drawPlusMask(playerx-192+scrollx,playery-128+scrolly,BackpackMan,playerp+playerf);
+  //your main character.  
 for(unsigned char ID=0;ID!=10;ID++){
 sprites.drawPlusMask(objectx[ID]-192+scrollx,objecty[ID]-128+scrolly,EnemyGraphic,objectp[ID]);
-}
+} //The enemies, they actually stick well on the map. 
 if(playery-128+scrolly>=32){scrolly-=1;BGcheck();}
 if(playery-128+scrolly<=24){scrolly+=1;BGcheck();}
 if(playerx-192+scrollx>=40){scrollx-=1;BGcheck();}
 if(playerx-192+scrollx<=72){scrollx+=1;BGcheck();}
-
+//Above pans the screen when the player walks outside the bound invisible box.
+//I have trouble telling it not to pan when it is specific spot. like the edge of a map.  
 
 aniframe++;if(aniframe==16){aniframe=0;}
 if(walk>=8){walk=0;}
 
 if(walk==0){playerf=0;}
 if(walk==4){playerf=1;}
-
+//animation
 
 arduboy.display();
 
